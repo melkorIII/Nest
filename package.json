@@ -2,7 +2,7 @@
   "name": "ionic-app-base",
   "version": "0.0.0",
   "author": "Ionic Framework",
-  "homepage": "https://ionicframework.com/",
+  "homepage": "https://melkoriii.github.io",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
