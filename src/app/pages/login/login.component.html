@@ -1,0 +1,17 @@
+<div id="container">
+  <ion-list>
+    <ion-item>
+      <ion-input labelPlacement="stacked" label="Username" placeholder="Username" [(ngModel)]="username">
+        <ion-icon slot="start" name="lock-closed" aria-hidden="true"></ion-icon>
+      </ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-input labelPlacement="stacked" label="Password" placeholder="Password" [(ngModel)]="password" type="password">
+        <ion-icon slot="start" name="lock-closed" aria-hidden="true"></ion-icon>
+      </ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-button (click)="login()">Log in</ion-button>
+    </ion-item>
+  </ion-list>
+</div>

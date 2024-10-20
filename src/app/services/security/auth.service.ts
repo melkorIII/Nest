@@ -13,7 +13,7 @@ export class AuthService {
   constructor(private localStorage: LocalStorageService) { }
 
   isAuthenticated(): boolean {
-    const token = localStorage.getItem('token');
+    let token: string = this.getToken();
     return !helper.isTokenExpired(token);
   }
   userAuthentication(token: string) {
