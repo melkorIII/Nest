@@ -31,7 +31,12 @@ export class AuthService {
     return (this.localStorage.get(LOCAL_STORAGE_KEYS.USER) as User).username;
   }
   public getToken() {
-    return (this.localStorage.get(LOCAL_STORAGE_KEYS.USER) as User).token;
+    try {
+      return (this.localStorage.get(LOCAL_STORAGE_KEYS.USER) as User).token; 
+    }
+    catch {
+      return '';
+    }
   }
   logout() {
     this.localStorage.remove(LOCAL_STORAGE_KEYS.USER);
