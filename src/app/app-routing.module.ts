@@ -5,11 +5,6 @@ import { AuthGuardService } from './services/security/auth-guard.service';
 
 const routes: Routes = [
   {
-    path: '',
-    redirectTo: 'folder/Input',
-    pathMatch: 'full'
-  },
-  {
     path: 'login',
     component: LoginComponent
   },
@@ -17,7 +12,12 @@ const routes: Routes = [
     path: 'folder/:id',
     loadChildren: () => import('./pages/folder/folder.module').then( m => m.FolderPageModule),
     canActivate: [AuthGuardService]
-  }
+  },
+  {
+    path: '**',
+    redirectTo: 'folder/input',
+    pathMatch: 'full'
+  },
 ];
 
 @NgModule({

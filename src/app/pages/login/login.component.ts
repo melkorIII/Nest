@@ -1,4 +1,5 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AccessService } from 'src/app/services/nest-api/access.service';
 import { AuthService } from 'src/app/services/security/auth.service';
@@ -12,16 +13,31 @@ export class LoginComponent  implements OnInit {
   private access = inject(AccessService);
   private auth = inject(AuthService);
   private router = inject(Router)
-  public username: string = '';
-  public password: string = '';
+  public loginForm: FormGroup;
+  public loginError: string | null = null;
 
-  constructor() { }
+  constructor(private fb: FormBuilder) {
+    this.loginForm = this.fb.group({
+      username: ['', Validators.required],
+      password: ['', Validators.required]
+    });
+  }
 
   ngOnInit() {}
   
   async login() {
-    let token: string = await this.access.Login(this.username!, this.password!);
-    this.auth.userAuthentication(token);
-    this.router.navigate(['']);
+    try {
+      let token: string = await this.access.Login(this.loginForm.value.username, this.loginForm.value.password);
+      this.auth.userAuthentication(token);
+      this.router.navigate(['']);
+    }
+    catch(error: any) {
+      this.loginError = error.message;
+    }
+  }
+
+  ionViewDidEnter() {
+    if(this.auth.isAuthenticated())
+      this.router.navigate(['']);
   }
 }
