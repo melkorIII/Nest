@@ -3,9 +3,11 @@
     <ion-title>Melkor's Nest</ion-title>
   </ion-toolbar>
 </ion-header>
-
 <ion-content class="ion-padding">
-  <form (submit)="login()" [formGroup]="loginForm" class="login-form">
+  <div class="ion-text-center">
+    <ion-button  *ngIf="!loginEnabler" color="primary" (click)="enableLogin()">Login</ion-button>
+  </div>
+  <form *ngIf="loginEnabler" (submit)="login()" [formGroup]="loginForm" class="login-form">
     <ion-item class="fixed-width-item">
       <ion-label position="floating">Username</ion-label>
       <ion-input type="type" formControlName="username" required></ion-input>

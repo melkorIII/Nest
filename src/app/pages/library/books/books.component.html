@@ -1,0 +1,25 @@
+<app-header title="Books"></app-header>
+<ion-content>
+    <div class="ion-padding-top" style="max-width: 75%; width: 100%; margin: 0 auto;">
+        <ion-button color="success" (click)="addBook()">
+            Add Book
+        </ion-button>
+        <ion-button color="warning" [disabled]="selectedBook == null" (click)="editBook()">
+            Edit Book
+        </ion-button>
+        <ion-button color="danger" [disabled]="selectedBook == null">
+            Delete Book
+        </ion-button>
+    </div>
+    <div style="max-width: 75%; width: 100%; margin: 0 auto;">
+        <app-list 
+            [columns]="columns" 
+            [rows]="rows" 
+            (previous)="previous($event)" 
+            (itemPerPages)="setBooksPerPage($event)" 
+            [pages]="pages" 
+            (getSelected)="this.selectedBook = $event"
+            (next)="next($event)">
+        </app-list>
+    </div>
+</ion-content>

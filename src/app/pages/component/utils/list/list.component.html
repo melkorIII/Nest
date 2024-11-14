@@ -1,0 +1,32 @@
+<ion-list class="list ion-no-padding">
+  <ion-list-header class="ion-no-padding">
+    <ion-grid>
+      <ion-row>
+        <ion-col class="ion-no-padding" *ngFor="let column of columns" [size]="column.size"><ion-label class="header-text">{{column.name}}</ion-label></ion-col>
+      </ion-row>
+  </ion-grid>
+  </ion-list-header>
+
+  <ion-item *ngFor="let row of rows" button [ngClass]="{ 'selected-item': selectedItem === row }" (click)="selectItem(row)">
+    <ion-grid class="ion-no-padding">
+      <ion-row>
+          <ion-col *ngFor="let column of columns; index as i" [size]="column.size" class="ion-no-padding">
+                  <ion-label class="small-text">{{row[column.name]}}</ion-label>
+          </ion-col>
+      </ion-row>
+    </ion-grid>
+  </ion-item>
+</ion-list>
+
+<ion-footer class="footer" *ngIf="pages > 1">
+  <ion-item>
+      <ion-button color="primary" [disabled]="index == 1" (click)="previousFunc()">Previous</ion-button>
+        <ion-text>Pagine {{index}} di {{pages}}</ion-text>
+      <ion-button color="primary" [disabled]="index == pages" (click)="nextFunc()">Next</ion-button>
+      <ion-select (ionChange)="bookPerPagesFunc($event)" slot="end" placeholder="10" interface="popover">
+        <ion-select-option value="10">10</ion-select-option>
+        <ion-select-option value="20">20</ion-select-option>
+        <ion-select-option value="50">50</ion-select-option>
+      </ion-select>
+  </ion-item>
+</ion-footer>

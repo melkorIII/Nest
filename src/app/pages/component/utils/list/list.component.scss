@@ -1,0 +1,32 @@
+.list {
+    width: 100%;
+    margin-top: 8px;
+}
+.footer {
+    margin-top: 8px;
+}
+
+.small-text {
+    font-size: smaller;
+}
+.header-text {
+    font-weight: bold;
+}
+ion-list-header {
+    border-style: solid;
+    border-width: 1px;
+    border-color: var(--ion-color-primary);
+}
+
+ion-item {
+    --padding-start: 2px;
+    --padding-end: 2px;
+    --inner-padding-end: 2px;
+    --inner-padding-start: 2px;
+    --min-height: 40px;
+}
+
+.selected-item {
+    color: black;
+    --background: var(--ion-color-primary-tint);
+}
