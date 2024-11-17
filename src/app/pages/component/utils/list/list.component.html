@@ -1,3 +1,23 @@
+<ion-header class="header">
+  <ion-row>    
+      <ion-item style="min-width: 40%;">
+        <ion-button slot="end"><ion-icon icon="search"></ion-icon></ion-button>
+        <ion-input></ion-input>
+      </ion-item>
+    <ion-item class="ion-padding-start" *ngIf="orderBy.length > 0">
+      <ion-text>Order by</ion-text>
+      <ion-select slot="end" interface="popover" [value]="orderBy[0]" (ionChange)="changeOrderFunc($event)">
+        <ion-select-option *ngFor="let order of orderBy" [value]="order">{{order}}</ion-select-option>
+      </ion-select>
+    </ion-item>
+    <ion-item class="ion-padding-start" *ngIf="orderBy.length > 0">
+      <ion-select slot="end" interface="popover" value="asc" (ionChange)="changeOrderModeFunc($event)">
+        <ion-select-option value="asc">asc</ion-select-option>
+        <ion-select-option value="desc">desc</ion-select-option>
+      </ion-select>
+    </ion-item>
+  </ion-row>
+</ion-header>
 <ion-list class="list ion-no-padding">
   <ion-list-header class="ion-no-padding">
     <ion-grid>
@@ -23,7 +43,7 @@
       <ion-button color="primary" [disabled]="index == 1" (click)="previousFunc()">Previous</ion-button>
         <ion-text>Pagine {{index}} di {{pages}}</ion-text>
       <ion-button color="primary" [disabled]="index == pages" (click)="nextFunc()">Next</ion-button>
-      <ion-select (ionChange)="bookPerPagesFunc($event)" slot="end" placeholder="10" interface="popover">
+      <ion-select (ionChange)="bookPerPagesFunc($event)" slot="end" value="10" interface="popover">
         <ion-select-option value="10">10</ion-select-option>
         <ion-select-option value="20">20</ion-select-option>
         <ion-select-option value="50">50</ion-select-option>

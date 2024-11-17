@@ -19,7 +19,10 @@
             (itemPerPages)="setBooksPerPage($event)" 
             [pages]="pages" 
             (getSelected)="this.selectedBook = $event"
-            (next)="next($event)">
+            (next)="next($event)"
+            [orderBy]="['Title', 'Author']"
+            (changeOrder)="changeOrder($event)"
+            (changeOrderMode)="changeOrderMode($event)">
         </app-list>
     </div>
 </ion-content>

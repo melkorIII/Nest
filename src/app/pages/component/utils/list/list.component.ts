@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, output, Output } from '@angular/core';
+import { Component, EventEmitter, input, Input, OnInit, Output } from '@angular/core';
 import { ListColumn } from 'src/app/core/models/list-column';
 
 @Component({
@@ -11,10 +11,14 @@ export class ListComponent  implements OnInit {
   @Input() public columns: ListColumn[] = [];
   @Input() public rows: any[] = [];
   @Input() public pages: number = -1;
+  @Input() public orderBy: string[] = [];
+  @Input() public orderMode: string = 'asc';
   @Output() public previous: EventEmitter<any> = new EventEmitter();
   @Output() public next: EventEmitter<any> = new EventEmitter();
   @Output() public itemPerPages: EventEmitter<any> = new EventEmitter();
   @Output() public getSelected: EventEmitter<any> = new EventEmitter();
+  @Output() public changeOrder: EventEmitter<any> = new EventEmitter();
+  @Output() public changeOrderMode: EventEmitter<any> = new EventEmitter();
   public index: number = 1;
 
   constructor() { }
@@ -36,5 +40,11 @@ export class ListComponent  implements OnInit {
   }
   bookPerPagesFunc(number: any) {
     this.itemPerPages.emit(number.detail.value);
+  }
+  changeOrderFunc(order: any) {
+    this.changeOrder.emit(order.detail.value);
+  }
+  changeOrderModeFunc(mode: any) {
+    this.changeOrderMode.emit(mode.detail.value);
   }
 }

@@ -5,18 +5,138 @@
       <ion-col size="6">
         <ion-label>Title</ion-label>
         <ion-item>
-          <ion-input></ion-input>
+          <ion-input [(ngModel)]="bookDetails.Title"></ion-input>
         </ion-item>
       </ion-col>
       <ion-col size="6">
         <ion-label>Italian Version</ion-label>
         <ion-item>
-          <ion-segment>
-            <ion-segment-button>Yes</ion-segment-button>
-            <ion-segment-button>No</ion-segment-button>
+          <ion-segment [value]="true" [(ngModel)]="bookDetails.ItalianVersion">
+            <ion-segment-button [value]="true">Yes</ion-segment-button>
+            <ion-segment-button [value]="false">No</ion-segment-button>
           </ion-segment>
         </ion-item>
       </ion-col>
     </ion-row>
+    <ion-row>
+      <ion-col>
+      <ion-label>Authors</ion-label>
+        <ion-item button>
+          <ion-text>{{mappedAuthors}}</ion-text>
+        </ion-item>
+      </ion-col>
+    </ion-row>
+    <!-- <ion-row>
+      <ion-col size="6">
+        <ion-label>Reading Date</ion-label>
+        <ion-item>
+          <ion-input type="Date" [(ngModel)]="bookDetails.ReadingDate"></ion-input>
+        </ion-item>
+      </ion-col>
+      <ion-col size="6" *ngIf="bookDetails.ReadingDate == null || bookDetails.ReadingDate.toString() == ''">
+        <ion-label>To read</ion-label>
+        <ion-item>
+          <ion-segment value="false">
+            <ion-segment-button class="ion-no-padding" value="true">Yes</ion-segment-button>
+            <ion-segment-button value="false">No</ion-segment-button>
+          </ion-segment>
+        </ion-item>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col size="6">
+        <ion-label>Physical copy</ion-label>
+        <ion-item>
+          <ion-segment value="false">
+            <ion-segment-button class="ion-no-padding" value="true">Yes</ion-segment-button>
+            <ion-segment-button value="false">No</ion-segment-button>
+          </ion-segment>
+        </ion-item>
+      </ion-col>
+      <ion-col size="6">
+        <ion-label>Digital copy</ion-label>
+        <ion-item>
+          <ion-segment value="false">
+            <ion-segment-button value="true">Yes</ion-segment-button>
+            <ion-segment-button value="false">No</ion-segment-button>
+          </ion-segment>
+        </ion-item>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col size="6">
+        <ion-label>Series</ion-label>
+        <ion-item>
+          <ion-input></ion-input>
+        </ion-item>
+      </ion-col>
+      <ion-col size="6">
+        <ion-label>Position</ion-label>
+        <ion-item>
+          <ion-text>Book number 6</ion-text>
+        </ion-item>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col size="6">
+        <ion-label>Loan date</ion-label>
+        <ion-item>
+          <ion-input type="date">
+          </ion-input>
+        </ion-item>
+      </ion-col>
+      <ion-col>
+        <ion-label>Loaner</ion-label>
+        <ion-item>
+          <ion-input></ion-input>
+        </ion-item>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col>
+        <ion-label>Loan notes</ion-label>
+        <ion-item>
+          <ion-textarea autoGrow="true"></ion-textarea>
+        </ion-item>
+      </ion-col>
+    </ion-row> -->
+    <ion-text class="register-link" color="danger" *ngIf="bookErrors.length > 0">
+      <p *ngFor="let bookError of bookErrors">{{bookError}}</p>
+    </ion-text>
+    <ion-row>
+      <ion-col>
+        <ion-button color="success" (click)="save()">Save</ion-button>
+        <ion-button color="warning" (click)="cancel()">Cancel</ion-button>
+      </ion-col>
+    </ion-row>
   </div>
+
+
+
+  <!-- <ion-modal trigger="open-modal" isOpen="false">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar>
+          <ion-buttons slot="start">
+            <ion-button>Cancel</ion-button>
+          </ion-buttons>
+          <ion-title>Welcome</ion-title>
+          <ion-buttons slot="end">
+            <ion-button [strong]="true">Confirm</ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content>
+        <ion-item>
+          <ion-input
+            label="Enter your name"
+            labelPlacement="stacked"
+            type="text"
+            placeholder="Your name"
+          ></ion-input>
+        </ion-item>
+      </ion-content>
+    </ng-template>
+  </ion-modal> -->
+
 </ion-content>

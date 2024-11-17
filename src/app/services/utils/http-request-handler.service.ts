@@ -32,6 +32,26 @@ export class HttpRequestHandlerService {
     }
   }
 
+  async post(params: string, body: string, baseUrl: string) {
+    try {
+      let token: string = this.auth.getToken();
+      const header = {
+        'accept': 'text/plain',
+        'Authorization': 'Bearer ' + token,
+        'Content-Type': 'application/json'
+      }
+      return JSON.stringify(await firstValueFrom(
+        this.http.post<string>(baseUrl + params, body, { headers: new HttpHeaders(header) }).pipe(
+          tap({
+            next: (data) => {return data},
+          })
+        )
+      ));
+    } catch (error) {
+      throw this.catchPromiseError(error);
+    }
+  }
+
   async catchPromiseError(error: any) {
     if (!(error instanceof HttpErrorResponse)) {
       await this.toast.presentToast('Nessuna connessione', 'danger');
@@ -39,7 +59,7 @@ export class HttpRequestHandlerService {
     }      
     if (error.status == 404) {
       return new Error( error.message);
-    } else if (error.status == 400) {
+    } else if (error.status == 400 || error.status == 500) {
       return new Error(error.error);
     } else if (error.status == 401 || error.status == 403) {
       await this.toast.presentToast('Non autorizzato', 'warning');

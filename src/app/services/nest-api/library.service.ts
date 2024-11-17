@@ -3,6 +3,7 @@ import { inject, Injectable } from '@angular/core';
 import { plainToInstance } from 'class-transformer';
 import { API_CONNECTION } from 'src/app/core/constants/constants';
 import { Book } from 'src/app/core/models/book';
+import { BookDetails } from 'src/app/core/models/book-details';
 
 @Injectable({
   providedIn: 'root'
@@ -18,12 +19,25 @@ export class LibraryService {
     request+= `?order=${order}&orderMode=${mode}&offset=${offset}&next=${next}`;
     if (search != null && searchBy != null)
       request += `&search=${search}&searchBy=${searchBy}`;
-    let result = JSON.parse(await this.requestHandler.get(request, this.url));
+    let result: Book[] = JSON.parse(await this.requestHandler.get(request, this.url));
     return result;
   }
 
   async GetBooksCount(): Promise<number> {
     let request: string = `${this.controller}GetBooksCount`;
     return JSON.parse(await this.requestHandler.get(request, this.url));
+  }
+
+  async GetBookDetails(bookId: number, user: string | null = null) {
+    let request: string = `${this.controller}GetBookDetails`;
+    request += `?bookId=${bookId}`;
+    if (user != null)
+      request += `&username=${user}`;
+    return JSON.parse(await this.requestHandler.get(request, this.url)) as BookDetails;
+  }
+
+  async SaveBook(book: BookDetails) {
+    let request: string = `${this.controller}SaveBook`;
+    await this.requestHandler.post(request, JSON.stringify(book), this.url);
   }
 }
