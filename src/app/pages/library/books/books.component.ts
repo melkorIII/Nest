@@ -12,7 +12,7 @@ import { LibraryService } from 'src/app/services/nest-api/library.service';
 export class BooksComponent  implements OnInit {
   private libraryService = inject(LibraryService);
   private router = inject(Router);
-  public columns: ListColumn[] = [ {name: 'Title', size: 6}, {name: 'Author', size: 6} ];
+  public columns: ListColumn[] = [ {name: 'Title', size: 6, identifier: 'Title'}, {name: 'Author', size: 6, identifier: 'Author'} ];
   public rows: Book[] = [];
   public pages: number = 0;
   public booksPerPage = 10;
@@ -22,18 +22,19 @@ export class BooksComponent  implements OnInit {
 
   constructor() { }
 
-  async ngOnInit() {
+  async ngOnInit() {}
+
+  async ionViewDidEnter() {
     this.getPages();
     this.GetBooks(1);
   }
 
   async getPages() {
-    this.pages = Math.ceil(await this.libraryService.GetBooksCount() / 10);
+    this.pages = Math.ceil(await this.libraryService.GetBooksCount() / this.booksPerPage);
   }
 
-  async GetBooks(index: number) {
-    this.rows = await this.libraryService.GetBooks(this.order, this.mode, (index - 1) * this.booksPerPage, this.booksPerPage, null, null)
-
+  async GetBooks(index: number, value: string | null = null) {
+    this.rows = await this.libraryService.GetBooks(this.order, this.mode, (index - 1) * this.booksPerPage, this.booksPerPage, value);
   }
 
   previous(index: number) {
@@ -62,6 +63,9 @@ export class BooksComponent  implements OnInit {
   changeOrderMode(mode: string) {
     this.mode = mode.toLowerCase();
     this.GetBooks(1);
+  }
+  search(value: string) {
+    this.GetBooks(1, value);
   }
 
 }

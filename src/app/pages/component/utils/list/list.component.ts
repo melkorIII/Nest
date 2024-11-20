@@ -7,19 +7,22 @@ import { ListColumn } from 'src/app/core/models/list-column';
   styleUrls: ['./list.component.scss'],
 })
 export class ListComponent  implements OnInit {
-  public selectedItem: any = null;
   @Input() public columns: ListColumn[] = [];
   @Input() public rows: any[] = [];
   @Input() public pages: number = -1;
   @Input() public orderBy: string[] = [];
   @Input() public orderMode: string = 'asc';
+  @Input() public pagination: boolean = true;
   @Output() public previous: EventEmitter<any> = new EventEmitter();
   @Output() public next: EventEmitter<any> = new EventEmitter();
   @Output() public itemPerPages: EventEmitter<any> = new EventEmitter();
   @Output() public getSelected: EventEmitter<any> = new EventEmitter();
   @Output() public changeOrder: EventEmitter<any> = new EventEmitter();
   @Output() public changeOrderMode: EventEmitter<any> = new EventEmitter();
+  @Output() public search: EventEmitter<any> = new EventEmitter();
   public index: number = 1;
+  public selectedItem: any = null;
+  public searchValue: string = '';
 
   constructor() { }
 
@@ -46,5 +49,8 @@ export class ListComponent  implements OnInit {
   }
   changeOrderModeFunc(mode: any) {
     this.changeOrderMode.emit(mode.detail.value);
+  }
+  searchFunc() {
+    this.search.emit(this.searchValue);
   }
 }

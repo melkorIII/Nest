@@ -10,7 +10,8 @@ export class AppComponent {
   public appPages = [
     { title: 'Home', url: 'home', icon: 'home', subList: []},
     { title: 'Library', url: 'library', icon: 'library', open: false, subList: [
-      { title: 'Books', url: 'library/books', icon: 'book'}
+      { title: 'Books', url: 'library/books', icon: 'book'},
+      { title: 'Authors', url: 'library/authors', icon: 'pencil'}
     ]},
   ];
   constructor() {}

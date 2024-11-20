@@ -7,9 +7,6 @@
         <ion-button color="warning" [disabled]="selectedBook == null" (click)="editBook()">
             Edit Book
         </ion-button>
-        <ion-button color="danger" [disabled]="selectedBook == null">
-            Delete Book
-        </ion-button>
     </div>
     <div style="max-width: 75%; width: 100%; margin: 0 auto;">
         <app-list 
@@ -22,7 +19,8 @@
             (next)="next($event)"
             [orderBy]="['Title', 'Author']"
             (changeOrder)="changeOrder($event)"
-            (changeOrderMode)="changeOrderMode($event)">
+            (changeOrderMode)="changeOrderMode($event)"
+            (search)="search($event)">
         </app-list>
     </div>
 </ion-content>

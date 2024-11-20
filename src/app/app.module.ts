@@ -14,9 +14,10 @@ import { HeaderComponent } from './pages/component/utils/header/header.component
 import { BooksComponent } from './pages/library/books/books.component';
 import { ListComponent } from './pages/component/utils/list/list.component';
 import { BookDetailsComponent } from './pages/library/book-details/book-details.component';
+import { AuthorsComponent } from './pages/library/authors/authors.component';
 
 @NgModule({
-  declarations: [AppComponent, LoginComponent, HomeComponent, HeaderComponent, BooksComponent, ListComponent, BookDetailsComponent],
+  declarations: [AppComponent, LoginComponent, HomeComponent, HeaderComponent, BooksComponent, ListComponent, BookDetailsComponent, AuthorsComponent],
   imports: [BrowserModule, FormsModule, IonicModule.forRoot(), AppRoutingModule, ReactiveFormsModule],
   providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy }, provideHttpClient(withInterceptorsFromDi())],
   bootstrap: [AppComponent],

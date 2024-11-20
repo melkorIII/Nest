@@ -21,7 +21,7 @@
     <ion-row>
       <ion-col>
       <ion-label>Authors</ion-label>
-        <ion-item button>
+        <ion-item button (click)="openModal()">
           <ion-text>{{mappedAuthors}}</ion-text>
         </ion-item>
       </ion-col>
@@ -112,31 +112,45 @@
   </div>
 
 
-
-  <!-- <ion-modal trigger="open-modal" isOpen="false">
+  <ion-modal [isOpen]="authorsModal" (didDismiss)="authorsModal = false">
     <ng-template>
       <ion-header>
         <ion-toolbar>
-          <ion-buttons slot="start">
-            <ion-button>Cancel</ion-button>
-          </ion-buttons>
-          <ion-title>Welcome</ion-title>
+          <ion-title>Authors</ion-title>
           <ion-buttons slot="end">
-            <ion-button [strong]="true">Confirm</ion-button>
+            <ion-button (click)="authorsModal = false" color="danger">Close</ion-button>
           </ion-buttons>
         </ion-toolbar>
       </ion-header>
       <ion-content>
-        <ion-item>
-          <ion-input
-            label="Enter your name"
-            labelPlacement="stacked"
-            type="text"
-            placeholder="Your name"
-          ></ion-input>
-        </ion-item>
+        <ion-row>
+          <ion-col size="6">
+            <ion-label>To Add</ion-label>
+            <div style="height: 250px;">
+              <app-authors
+                [component]="true"
+                (getSelected)="getAuthorToAdd($event)"
+                [authorsPerPage]="3"
+              ></app-authors>              
+            </div>
+            <ion-button color="success" [disabled]="authorToAdd == null" (click)="addAuthor()">Add Author</ion-button>
+          </ion-col>
+          <ion-col size="6">
+            <ion-label>Added</ion-label>
+            <div style="height: 250px;" class="ion-no-padding">
+              <app-list
+                [columns]="[{name: 'Author name', size: 12, identifier: 'AuthorName'}]"
+                [rows]="bookDetails.Authors!"
+                (getSelected)="getAuthorToRemove($event)"
+                [pagination]="false"                
+              >
+              </app-list>         
+            </div>
+            <ion-button color="danger" [disabled]="authorToRemove == null" (click)="removeAuthor()">Remove Author</ion-button>
+          </ion-col>
+        </ion-row>
       </ion-content>
     </ng-template>
-  </ion-modal> -->
+  </ion-modal>
 
 </ion-content>

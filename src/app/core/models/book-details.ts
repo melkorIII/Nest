@@ -3,7 +3,7 @@ import { Book } from "./book";
 
 export class BookDetails extends Book {
     ItalianVersion: boolean;
-    Authors: Author[] | null;
+    Authors: Author[];
     PhysicallyOwned: boolean | null;
     DigitallyOwned: boolean | null;
     OwnedBookId: number | null;
@@ -17,7 +17,7 @@ export class BookDetails extends Book {
     LoanCounter: number | null;
     Notes: string | null;
 
-    constructor(bookId: number, title: string, italianVersion: boolean, authors: Author[] | null, physicallyOwned: boolean,
+    constructor(bookId: number, title: string, italianVersion: boolean, authors: Author[], physicallyOwned: boolean,
         digitallyOwned: boolean, ownedBookId: number | null, readingDate: Date | null, toRead: boolean | null, position: number | null, 
         seriesName: string | null, seriesId: number | null,
         loanDate: Date | null, loaner: string | null, loanCounter: number | null, notes: string | null

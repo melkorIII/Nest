@@ -5,6 +5,7 @@ import { AuthGuardService } from './services/security/auth-guard.service';
 import { HomeComponent } from './pages/home/home.component';
 import { BooksComponent } from './pages/library/books/books.component';
 import { BookDetailsComponent } from './pages/library/book-details/book-details.component';
+import { AuthorsComponent } from './pages/library/authors/authors.component';
 
 const routes: Routes = [
   {
@@ -24,6 +25,11 @@ const routes: Routes = [
   {
     path: 'library/book/:id',
     component: BookDetailsComponent,
+    canActivate: [AuthGuardService]
+  },
+  {
+    path: 'library/authors',
+    component: AuthorsComponent,
     canActivate: [AuthGuardService]
   },
   {
