@@ -2,6 +2,7 @@ import { Component, EventEmitter, inject, input, Input, OnInit, Output } from '@
 import { Author } from 'src/app/core/models/author';
 import { ListColumn } from 'src/app/core/models/list-column';
 import { LibraryService } from 'src/app/services/nest-api/library.service';
+import { LoadingService } from 'src/app/services/utils/loading.service';
 
 @Component({
   selector: 'app-authors',
@@ -10,6 +11,7 @@ import { LibraryService } from 'src/app/services/nest-api/library.service';
 })
 export class AuthorsComponent  implements OnInit {
   private libraryService = inject(LibraryService)
+  private loading = inject(LoadingService)
   @Input() public component: boolean = false;
   @Input() public authorsPerPage = 10;
   @Output() public getSelected: EventEmitter<any> = new EventEmitter();
@@ -24,9 +26,11 @@ export class AuthorsComponent  implements OnInit {
 
   constructor() { }
 
-  ngOnInit() {
-    this.GetAuthors(1);
-    this.GetPages();
+  async ngOnInit() {
+    await this.loading.present();
+    await this.GetAuthors(1);
+    await this.GetPages();
+    await this.loading.dismiss();
   }
 
   async GetPages() {
@@ -37,25 +41,35 @@ export class AuthorsComponent  implements OnInit {
     this.selectedAuthor = null;
     this.rows = await this.libraryService.GetAuthors(this.orderMode, (index - 1) * this.authorsPerPage, this.authorsPerPage, value);
   }
-  previous(index: number) {
+  async previous(index: number) {
+    await this.loading.present();
     this.selectedAuthor = null;
-    this.GetAuthors(index);
+    await this.GetAuthors(index);
+    await this.loading.dismiss();
   }
-  next(index: number) {
+  async next(index: number) {
+    await this.loading.present();
     this.selectedAuthor = null;
-    this.GetAuthors(index);
+    await this.GetAuthors(index);
+    await this.loading.dismiss();
   }
-  setAuthorsPerPage(number: number) {
+  async setAuthorsPerPage(number: number) {
+    await this.loading.present();
     this.authorsPerPage = number;
     this.selectedAuthor = null;
-    this.GetAuthors(1);
+    await this.GetAuthors(1);
+    await this.loading.present();
   }
-  changeOrderMode(mode: string) {
+  async changeOrderMode(mode: string) {
+    await this.loading.present();
     this.orderMode = mode.toLowerCase();
-    this.GetAuthors(1);
+    await this.GetAuthors(1);
+    await this.loading.dismiss();
   }
-  search(value: string) {
-    this.GetAuthors(1, value);
+  async search(value: string) {
+    await this.loading.present();
+    await this.GetAuthors(1, value);
+    await this.loading.dismiss();
   }
   addAuthor() {
     this.authorModal = true;
@@ -69,9 +83,13 @@ export class AuthorsComponent  implements OnInit {
     this.authorErrors = [];
     if (this.authorToEdit.AuthorName == null || this.authorToEdit.AuthorName == '')
       this.authorErrors.push('The author name is required');
+    if (this.authorErrors.length > 0)
+      return;
+    await this.loading.present();
     await this.libraryService.SaveAuthor(this.authorToEdit);
     this.authorModal = false;
     this.GetAuthors(1);
+    await this.loading.dismiss();
   }
 
   selectAuthor(author: any) {

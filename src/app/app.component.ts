@@ -11,7 +11,8 @@ export class AppComponent {
     { title: 'Home', url: 'home', icon: 'home', subList: []},
     { title: 'Library', url: 'library', icon: 'library', open: false, subList: [
       { title: 'Books', url: 'library/books', icon: 'book'},
-      { title: 'Authors', url: 'library/authors', icon: 'pencil'}
+      { title: 'Authors', url: 'library/authors', icon: 'pencil'},
+      { title: 'Series', url: 'library/series', icon: 'library'}
     ]},
   ];
   constructor() {}

@@ -41,3 +41,12 @@
     position: fixed;
     --start: true;
 }
+
+.custom-loading {
+    --background: none;
+    box-shadow: none!important;
+    background-image: url('assets/icon/pentagram.png');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 30%;
+}

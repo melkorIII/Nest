@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { Book } from 'src/app/core/models/book';
 import { ListColumn } from 'src/app/core/models/list-column';
 import { LibraryService } from 'src/app/services/nest-api/library.service';
+import { LoadingService } from 'src/app/services/utils/loading.service';
 
 @Component({
   selector: 'app-books',
@@ -12,6 +13,7 @@ import { LibraryService } from 'src/app/services/nest-api/library.service';
 export class BooksComponent  implements OnInit {
   private libraryService = inject(LibraryService);
   private router = inject(Router);
+  private loading = inject(LoadingService);
   public columns: ListColumn[] = [ {name: 'Title', size: 6, identifier: 'Title'}, {name: 'Author', size: 6, identifier: 'Author'} ];
   public rows: Book[] = [];
   public pages: number = 0;
@@ -25,8 +27,11 @@ export class BooksComponent  implements OnInit {
   async ngOnInit() {}
 
   async ionViewDidEnter() {
-    this.getPages();
-    this.GetBooks(1);
+    await this.loading.present();
+    this.selectedBook = null;
+    await this.getPages();
+    await this.GetBooks(1);
+    await this.loading.dismiss();
   }
 
   async getPages() {
@@ -37,18 +42,24 @@ export class BooksComponent  implements OnInit {
     this.rows = await this.libraryService.GetBooks(this.order, this.mode, (index - 1) * this.booksPerPage, this.booksPerPage, value);
   }
 
-  previous(index: number) {
+  async previous(index: number) {
+    await this.loading.present();
     this.selectedBook = null;
-    this.GetBooks(index);
+    await this.GetBooks(index);
+    await this.loading.dismiss();
   }
-  next(index: number) {
+  async next(index: number) {
+    await this.loading.present();
     this.selectedBook = null;
-    this.GetBooks(index);
+    await this.GetBooks(index);
+    await this.loading.dismiss();
   }
-  setBooksPerPage(number: number) {
+  async setBooksPerPage(number: number) {
+    await this.loading.present();
     this.booksPerPage = number;
     this.selectedBook = null;
-    this.GetBooks(1);
+    await this.GetBooks(1);
+    await this.loading.dismiss();
   }
   addBook(){
     this.router.navigate(['library/book/add']);
@@ -56,16 +67,22 @@ export class BooksComponent  implements OnInit {
   editBook() {
     this.router.navigate([`library/book/${this.selectedBook?.BookId}`])
   }
-  changeOrder(order: string) {
+  async changeOrder(order: string) {
+    await this.loading.present();
     this.order = order.toLowerCase();
-    this.GetBooks(1);
+    await this.GetBooks(1);
+    await this.loading.dismiss();
   }
-  changeOrderMode(mode: string) {
+  async changeOrderMode(mode: string) {
+    await this.loading.present();
     this.mode = mode.toLowerCase();
-    this.GetBooks(1);
+    await this.GetBooks(1);
+    await this.loading.dismiss();
   }
-  search(value: string) {
-    this.GetBooks(1, value);
+  async search(value: string) {
+    await this.loading.present();
+    await this.GetBooks(1, value);
+    await this.loading.dismiss();
   }
 
 }

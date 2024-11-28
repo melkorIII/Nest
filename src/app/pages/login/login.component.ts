@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AccessService } from 'src/app/services/nest-api/access.service';
 import { AuthService } from 'src/app/services/security/auth.service';
+import { LoadingService } from 'src/app/services/utils/loading.service';
 
 @Component({
   selector: 'app-login',
@@ -13,6 +14,7 @@ export class LoginComponent  implements OnInit {
   private access = inject(AccessService);
   private auth = inject(AuthService);
   private router = inject(Router);
+  private loading = inject(LoadingService)
   public loginEnabler: boolean = false;
   public loginForm: FormGroup;
   public loginError: string | null = null;
@@ -34,13 +36,16 @@ export class LoginComponent  implements OnInit {
   
   async login() {
     try {
+      await this.loading.present();
       let token: string = await this.access.Login(this.loginForm.value.username, this.loginForm.value.password);
       this.auth.userAuthentication(token);
       this.loginForm.reset();
       this.loginEnabler = false;
       this.router.navigate(['']);
+      await this.loading.dismiss();
     }
     catch(error: any) {
+      await this.loading.dismiss();
       this.loginError = error.message;
     }
   }

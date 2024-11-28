@@ -3,6 +3,7 @@ import { inject, Injectable } from '@angular/core';
 import { AuthService } from '../security/auth.service';
 import { firstValueFrom, tap } from 'rxjs';
 import { ToastService } from './toast.service';
+import { LoadingService } from './loading.service';
 
 @Injectable({
   providedIn: 'root'
@@ -11,6 +12,7 @@ export class HttpRequestHandlerService {
   private http = inject(HttpClient);
   private auth = inject(AuthService);
   private toast = inject(ToastService);
+  private loading = inject(LoadingService);
   constructor() { }
 
   async get(params: string, baseUrl: string) {
