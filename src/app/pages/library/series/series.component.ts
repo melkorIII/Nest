@@ -3,6 +3,9 @@ import { ignoreElements } from 'rxjs';
 import { ListColumn } from 'src/app/core/models/list-column';
 import { Series } from 'src/app/core/models/series';
 import { LibraryService } from 'src/app/services/nest-api/library.service';
+import { AuthService } from 'src/app/services/security/auth.service';
+import { CatchErrorService } from 'src/app/services/utils/catch-error.service';
+import { HeaderTitleService } from 'src/app/services/utils/header-title.service';
 import { LoadingService } from 'src/app/services/utils/loading.service';
 
 @Component({
@@ -12,7 +15,10 @@ import { LoadingService } from 'src/app/services/utils/loading.service';
 })
 export class SeriesComponent  implements OnInit {
   private libraryService = inject(LibraryService)
-  private loading = inject(LoadingService)
+  private loading = inject(LoadingService);
+  private error = inject(CatchErrorService);
+  public auth = inject(AuthService);
+  private header = inject(HeaderTitleService)
   @Input() public component: boolean = false;
   @Input() public seriesPerPage = 10;
   @Output() public getSelected: EventEmitter<any> = new EventEmitter();
@@ -28,10 +34,19 @@ export class SeriesComponent  implements OnInit {
   constructor() { }
 
   async ngOnInit() {
-    await this.loading.present();
-    await this.GetSeries(1);
-    await this.GetPages();
-    await this.loading.dismiss();
+    if (!this.component)
+      this.header.setTitle('Series')
+    try {
+      await this.loading.present();
+      await this.GetSeries(1);
+      await this.GetPages();
+    }
+    catch(error) {
+      await this.error.catchError(error);
+    }
+    finally{
+      await this.loading.dismiss();
+    }
   }
 
   async GetPages() {
@@ -43,34 +58,69 @@ export class SeriesComponent  implements OnInit {
     this.rows = await this.libraryService.GetSeries(this.orderMode, (index - 1) * this.seriesPerPage, this.seriesPerPage, value);
   }
   async previous(index: number) {
-    await this.loading.present();
-    this.selectedSeries = null;
-    await this.GetSeries(index);
-    await this.loading.dismiss();
+    try {
+      await this.loading.present();
+      this.selectedSeries = null;
+      await this.GetSeries(index);
+    }
+    catch(error) {
+      await this.error.catchError(error)
+    }
+    finally {
+      await this.loading.dismiss();
+    }
   }
   async next(index: number) {
-    await this.loading.present();
-    this.selectedSeries = null;
-    await this.GetSeries(index);
-    await this.loading.dismiss();
+    try {
+      await this.loading.present();
+      this.selectedSeries = null;
+      await this.GetSeries(index);
+    }
+    catch (error) {
+      await this.error.catchError(error)
+    }
+    finally {
+      await this.loading.dismiss();
+    }
   }
   async setSeriesPerPage(number: number) {
-    await this.loading.present();
-    this.seriesPerPage = number;
-    this.selectedSeries = null;
-    await this.GetSeries(1);
-    await this.loading.dismiss();
+    try {
+      await this.loading.present();
+      this.seriesPerPage = number;
+      this.selectedSeries = null;
+      await this.GetSeries(1);
+    }
+    catch(error) {
+      await this.error.catchError(error);
+    }
+    finally {
+      await this.loading.dismiss();
+    }
   }
   async changeOrderMode(mode: string) {
-    await this.loading.present();
-    this.orderMode = mode.toLowerCase();
-    await this.GetSeries(1);
-    await this.loading.dismiss();
+    try {
+      await this.loading.present();
+      this.orderMode = mode.toLowerCase();
+      await this.GetSeries(1);
+    }
+    catch(error) {
+      await this.error.catchError(error);
+    }
+    finally {
+      await this.loading.dismiss();
+    }
   }
   async search(value: string) {
-    await this.loading.present();
-    this.GetSeries(1, value);
-    await this.loading.dismiss();
+    try {
+      await this.loading.present();
+      await this.GetSeries(1, value);
+    }
+    catch(error) {
+      await this.error.catchError(error)
+    }
+    finally {
+      await this.loading.dismiss();
+    }
   }
   addSeries() {
     this.seriesModal = true;
@@ -86,11 +136,19 @@ export class SeriesComponent  implements OnInit {
       this.seriesErrors.push('The series name is required');
     if (this.seriesErrors.length > 0)
       return;
-    await this.loading.present();
-    await this.libraryService.SaveSeries(this.seriesToEdit);
-    this.seriesModal = false;
-    this.GetSeries(1);
-    await this.loading.dismiss();
+    try {
+      await this.loading.present();
+      await this.libraryService.SaveSeries(this.seriesToEdit);
+      this.seriesModal = false;
+      await this.GetSeries(1);
+      await this.GetPages();
+    }
+    catch(error) {
+      await this.error.catchError(error)
+    }
+    finally {
+      await this.loading.dismiss();
+    }
   }
 
   selectSeries(series: any) {

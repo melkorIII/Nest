@@ -15,4 +15,8 @@ export class AccessService {
     let request: string = `Access/Login?username=${username}&password=${password}`
     return JSON.parse(await this.requestHandler.get(request, this.url));
   }
+  async getUsers() {
+    let request: string = `Access/GetUsers`;
+    return JSON.parse(await this.requestHandler.get(request, this.url));
+  }
 }

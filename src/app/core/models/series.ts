@@ -1,4 +1,3 @@
-
 export class Series {
     SeriesId: number;
     SeriesName: string;

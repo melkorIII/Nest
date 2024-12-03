@@ -2,3 +2,19 @@
     text-align: center;
     margin-top: 20px;
   }
+
+ion-accordion div {
+  border-style: solid;
+  border-width: 1px;
+  border-color: var(--ion-color-primary);
+  margin-bottom: 8px;
+}
+
+.item-segment {
+  --padding-start: 0px;
+  --inner-padding-end: 0px;
+}
+
+ion-segment-button{
+  opacity: 1;
+}

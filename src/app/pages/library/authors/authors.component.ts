@@ -2,6 +2,9 @@ import { Component, EventEmitter, inject, input, Input, OnInit, Output } from '@
 import { Author } from 'src/app/core/models/author';
 import { ListColumn } from 'src/app/core/models/list-column';
 import { LibraryService } from 'src/app/services/nest-api/library.service';
+import { AuthService } from 'src/app/services/security/auth.service';
+import { CatchErrorService } from 'src/app/services/utils/catch-error.service';
+import { HeaderTitleService } from 'src/app/services/utils/header-title.service';
 import { LoadingService } from 'src/app/services/utils/loading.service';
 
 @Component({
@@ -12,6 +15,9 @@ import { LoadingService } from 'src/app/services/utils/loading.service';
 export class AuthorsComponent  implements OnInit {
   private libraryService = inject(LibraryService)
   private loading = inject(LoadingService)
+  private error = inject(CatchErrorService);
+  public auth = inject(AuthService);
+  private headerTitle = inject(HeaderTitleService)
   @Input() public component: boolean = false;
   @Input() public authorsPerPage = 10;
   @Output() public getSelected: EventEmitter<any> = new EventEmitter();
@@ -27,10 +33,19 @@ export class AuthorsComponent  implements OnInit {
   constructor() { }
 
   async ngOnInit() {
-    await this.loading.present();
-    await this.GetAuthors(1);
-    await this.GetPages();
-    await this.loading.dismiss();
+    if (!this.component)
+      this.headerTitle.setTitle('Authors')
+    try {
+      await this.loading.present();
+      await this.GetAuthors(1);
+      await this.GetPages();
+    }
+    catch(error) {
+      await this.error.catchError(error);
+    }
+    finally {
+      await this.loading.dismiss();
+    }
   }
 
   async GetPages() {
@@ -42,34 +57,69 @@ export class AuthorsComponent  implements OnInit {
     this.rows = await this.libraryService.GetAuthors(this.orderMode, (index - 1) * this.authorsPerPage, this.authorsPerPage, value);
   }
   async previous(index: number) {
-    await this.loading.present();
-    this.selectedAuthor = null;
-    await this.GetAuthors(index);
-    await this.loading.dismiss();
+    try {
+      await this.loading.present();
+      this.selectedAuthor = null;
+      await this.GetAuthors(index);
+    }
+    catch (error) {
+      await this.error.catchError(error);
+    }
+    finally {
+      await this.loading.dismiss();
+    }
   }
   async next(index: number) {
-    await this.loading.present();
-    this.selectedAuthor = null;
-    await this.GetAuthors(index);
-    await this.loading.dismiss();
+    try {
+      await this.loading.present();
+      this.selectedAuthor = null;
+      await this.GetAuthors(index);
+    }
+    catch (error) {
+      await this.error.catchError(error);
+    }
+    finally {
+      await this.loading.dismiss();
+    }
   }
   async setAuthorsPerPage(number: number) {
-    await this.loading.present();
-    this.authorsPerPage = number;
-    this.selectedAuthor = null;
-    await this.GetAuthors(1);
-    await this.loading.present();
+    try {
+      await this.loading.present();
+      this.authorsPerPage = number;
+      this.selectedAuthor = null;
+      await this.GetAuthors(1);
+    }
+    catch(error) {
+      await this.error.catchError(error);
+    }
+    finally {
+      await this.loading.present();
+    }
   }
   async changeOrderMode(mode: string) {
-    await this.loading.present();
-    this.orderMode = mode.toLowerCase();
-    await this.GetAuthors(1);
-    await this.loading.dismiss();
+    try {
+      await this.loading.present();
+      this.orderMode = mode.toLowerCase();
+      await this.GetAuthors(1);
+    }
+    catch(error) {
+      await this.error.catchError(error)
+    }
+    finally {
+      await this.loading.dismiss();
+    }
   }
   async search(value: string) {
-    await this.loading.present();
-    await this.GetAuthors(1, value);
-    await this.loading.dismiss();
+    try {
+      await this.loading.present();
+      await this.GetAuthors(1, value);
+    }
+    catch(error) {
+      await this.error.catchError(error);
+    }
+    finally {
+      await this.loading.dismiss();
+    }
   }
   addAuthor() {
     this.authorModal = true;
@@ -85,11 +135,19 @@ export class AuthorsComponent  implements OnInit {
       this.authorErrors.push('The author name is required');
     if (this.authorErrors.length > 0)
       return;
-    await this.loading.present();
-    await this.libraryService.SaveAuthor(this.authorToEdit);
-    this.authorModal = false;
-    this.GetAuthors(1);
-    await this.loading.dismiss();
+    try {
+      await this.loading.present();
+      await this.libraryService.SaveAuthor(this.authorToEdit);
+      this.authorModal = false;
+      await this.GetAuthors(1);
+      await this.GetPages();
+    }
+    catch(error) {
+      await this.error.catchError(error)
+    }
+    finally {
+      await this.loading.dismiss();
+    }
   }
 
   selectAuthor(author: any) {

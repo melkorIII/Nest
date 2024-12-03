@@ -1,14 +1,13 @@
-<app-header *ngIf="!component" title="Series"></app-header>
 <ion-content>
   <div *ngIf="!component" class="ion-padding-top" style='max-width: 75%; width: 100%; margin: 0 auto;'>
     <ion-button color="success" (click)="addSeries()">
       Add Series
     </ion-button>
-    <ion-button color="warning" [disabled]="selectedSeries == null" (click)="editSeries()">
+    <ion-button *ngIf="auth.getAdmin()" color="warning" [disabled]="selectedSeries == null" (click)="editSeries()">
       Edit Series
     </ion-button>
   </div>
-  <div [style]="component ? '' : 'max-width: 75%; width: 100%; margin: 0 auto;'">
+  <div [ngClass]="!component ? 'content' : ''">
     <app-list
       [columns]="columns"
       [rows]="rows"

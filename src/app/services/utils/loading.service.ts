@@ -18,9 +18,8 @@ export class LoadingService {
       translucent: true
     }).then(a => {
       a.present().then(() => {
-        console.log('presented');
         if (!this.isLoading) {
-          a.dismiss().then(() => console.log('abort presenting'));
+          a.dismiss();
         }
       });
     });
@@ -28,7 +27,7 @@ export class LoadingService {
 
   async dismiss() {
     this.isLoading = false;
-    return await this.loading.dismiss().then(() => console.log('dismissed'));
+    return await this.loading.dismiss();
   }
 
 }

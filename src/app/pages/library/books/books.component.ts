@@ -1,9 +1,12 @@
+import { catchError } from 'rxjs';
 import { Component, inject, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Book } from 'src/app/core/models/book';
 import { ListColumn } from 'src/app/core/models/list-column';
 import { LibraryService } from 'src/app/services/nest-api/library.service';
+import { CatchErrorService } from 'src/app/services/utils/catch-error.service';
 import { LoadingService } from 'src/app/services/utils/loading.service';
+import { HeaderTitleService } from 'src/app/services/utils/header-title.service';
 
 @Component({
   selector: 'app-books',
@@ -14,6 +17,8 @@ export class BooksComponent  implements OnInit {
   private libraryService = inject(LibraryService);
   private router = inject(Router);
   private loading = inject(LoadingService);
+  private error = inject(CatchErrorService);
+  private header = inject(HeaderTitleService)
   public columns: ListColumn[] = [ {name: 'Title', size: 6, identifier: 'Title'}, {name: 'Author', size: 6, identifier: 'Author'} ];
   public rows: Book[] = [];
   public pages: number = 0;
@@ -27,11 +32,19 @@ export class BooksComponent  implements OnInit {
   async ngOnInit() {}
 
   async ionViewDidEnter() {
-    await this.loading.present();
-    this.selectedBook = null;
-    await this.getPages();
-    await this.GetBooks(1);
-    await this.loading.dismiss();
+    this.header.setTitle('Books')
+    try {
+      await this.loading.present();
+      this.selectedBook = null;
+      await this.getPages();
+      await this.GetBooks(1);
+    }
+    catch(error) {
+      await this.error.catchError(error);
+    }
+    finally {
+      await this.loading.dismiss();
+    }
   }
 
   async getPages() {
@@ -43,23 +56,44 @@ export class BooksComponent  implements OnInit {
   }
 
   async previous(index: number) {
+    try {
     await this.loading.present();
     this.selectedBook = null;
     await this.GetBooks(index);
-    await this.loading.dismiss();
+    }
+    catch (error) {
+      await this.error.catchError(error)
+    }
+    finally {
+      await this.loading.dismiss();
+    }
   }
   async next(index: number) {
-    await this.loading.present();
-    this.selectedBook = null;
-    await this.GetBooks(index);
-    await this.loading.dismiss();
+    try {
+      await this.loading.present();
+      this.selectedBook = null;
+      await this.GetBooks(index);
+    }
+    catch(error) {
+      await this.error.catchError(error);
+    }
+    finally {
+      await this.loading.dismiss();
+    }
   }
   async setBooksPerPage(number: number) {
-    await this.loading.present();
-    this.booksPerPage = number;
-    this.selectedBook = null;
-    await this.GetBooks(1);
-    await this.loading.dismiss();
+    try {
+      await this.loading.present();
+      this.booksPerPage = number;
+      this.selectedBook = null;
+      await this.GetBooks(1);
+    }
+    catch(error) {
+      await this.error.catchError(error);
+    }
+    finally {
+      await this.loading.dismiss(); 
+    }
   }
   addBook(){
     this.router.navigate(['library/book/add']);
@@ -68,21 +102,42 @@ export class BooksComponent  implements OnInit {
     this.router.navigate([`library/book/${this.selectedBook?.BookId}`])
   }
   async changeOrder(order: string) {
-    await this.loading.present();
-    this.order = order.toLowerCase();
-    await this.GetBooks(1);
-    await this.loading.dismiss();
+    try {
+      await this.loading.present();
+      this.order = order.toLowerCase();
+      await this.GetBooks(1);
+    }
+    catch(error) {
+      await this.error.catchError(error);
+    }
+    finally {
+      await this.loading.dismiss();
+    }
   }
   async changeOrderMode(mode: string) {
-    await this.loading.present();
-    this.mode = mode.toLowerCase();
-    await this.GetBooks(1);
-    await this.loading.dismiss();
+    try{
+      await this.loading.present();
+      this.mode = mode.toLowerCase();
+      await this.GetBooks(1);
+    }
+    catch(error) {
+      await this.error.catchError(error)
+    }
+    finally {
+      await this.loading.dismiss();
+    }
   }
   async search(value: string) {
-    await this.loading.present();
-    await this.GetBooks(1, value);
-    await this.loading.dismiss();
+    try {
+      await this.loading.present();
+      await this.GetBooks(1, value);
+    }
+    catch (error) {
+      await this.error.catchError(error);
+    }
+    finally {
+      await this.loading.dismiss();
+    }
   }
 
 }

@@ -3,7 +3,6 @@ import { inject, Injectable } from '@angular/core';
 import { AuthService } from '../security/auth.service';
 import { firstValueFrom, tap } from 'rxjs';
 import { ToastService } from './toast.service';
-import { LoadingService } from './loading.service';
 
 @Injectable({
   providedIn: 'root'
@@ -12,7 +11,6 @@ export class HttpRequestHandlerService {
   private http = inject(HttpClient);
   private auth = inject(AuthService);
   private toast = inject(ToastService);
-  private loading = inject(LoadingService);
   constructor() { }
 
   async get(params: string, baseUrl: string) {
@@ -30,7 +28,7 @@ export class HttpRequestHandlerService {
         )
       ));
     } catch (error) {
-      throw this.catchPromiseError(error);
+      throw await this.catchPromiseError(error);
     }
   }
 
@@ -50,7 +48,7 @@ export class HttpRequestHandlerService {
         )
       ));
     } catch (error) {
-      throw this.catchPromiseError(error);
+      throw await this.catchPromiseError(error);
     }
   }
 
@@ -62,7 +60,7 @@ export class HttpRequestHandlerService {
     if (error.status == 404) {
       return new Error( error.message);
     } else if (error.status == 400 || error.status == 500) {
-      return new Error(error.error);
+      return new Error(error.error, {cause: error.status});
     } else if (error.status == 401 || error.status == 403) {
       await this.toast.presentToast('Non autorizzato', 'warning');
       return new Error('');

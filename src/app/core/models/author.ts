@@ -1,4 +1,3 @@
-
 export class Author {
     AuthorName: string;
     AuthorId: number;    

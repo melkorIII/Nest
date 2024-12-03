@@ -1,10 +1,15 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { NavController, LoadingController } from '@ionic/angular';
+import { NavController} from '@ionic/angular';
 import { Author } from 'src/app/core/models/author';
 import { BookDetails } from 'src/app/core/models/book-details';
+import { Ownership } from 'src/app/core/models/ownership';
+import { Reading } from 'src/app/core/models/reading';
 import { Series } from 'src/app/core/models/series';
 import { LibraryService } from 'src/app/services/nest-api/library.service';
+import { AuthService } from 'src/app/services/security/auth.service';
+import { CatchErrorService } from 'src/app/services/utils/catch-error.service';
+import { HeaderTitleService } from 'src/app/services/utils/header-title.service';
 import { LoadingService } from 'src/app/services/utils/loading.service';
 
 @Component({
@@ -16,7 +21,10 @@ export class BookDetailsComponent  implements OnInit {
   private route = inject(ActivatedRoute);
   private navigation = inject(NavController);
   private libraryService = inject(LibraryService);
-  private loading = inject(LoadingService)
+  private loading = inject(LoadingService);
+  private error = inject(CatchErrorService);
+  private header = inject(HeaderTitleService);
+  public auth = inject(AuthService);
   public bookDetails: BookDetails;
   public mappedAuthors: string | undefined = '';
   public bookErrors: string[] = [];
@@ -26,40 +34,55 @@ export class BookDetailsComponent  implements OnInit {
   public series: Series = new Series(0, '');
   public seriesModal: boolean= false;
   public selectedSeries: Series | null = null;
+  public reading: Reading = new Reading(0, null, false)
+  public readingErrors: string[] = [];
+  public ownership: Ownership = new Ownership(0, false, false);
 
   constructor() {
-    this.bookDetails = new BookDetails(0, '', true, [], null, false, false, null, null, null, null, null, null, null, null);
+    this.bookDetails = new BookDetails(0, '', true, [], null, null, null, null, null, null, null, null);
    }
 
   async ngOnInit() {
-    await this.loading.present();
+    this.header.setTitle('Book Details');
     let id: any = this.route.snapshot.paramMap.get('id');
     if (! isNaN(Number(id))) {
       try {
-        this.bookDetails = await this.libraryService.GetBookDetails(id as number);
+        await this.loading.present();
+        this.bookDetails = await this.libraryService.GetBookDetails(id as number, this.auth.getPersonification());
         this.mappedAuthors = this.bookDetails.Authors.map(t => t.AuthorName).join(', ');
         this.series = this.bookDetails.Series ?? this.series;
+        this.reading = this.bookDetails.Reading ?? this.reading;
+        this.ownership = this.bookDetails.Ownership ?? this.ownership;
       }
-      catch(error) {}
+      catch(error) {
+        await this.error.catchError(error)
+      }
+      finally {
+        await this.loading.dismiss();
+      }
     }
-    await this.loading.dismiss();
   }
 
-  async save() {
-    await this.loading.present();
-    this.checkError();
+  async saveGeneralData() {
+    this.checkGeneralDataError();
     if (this.bookErrors.length > 0) {
-      await this.loading.dismiss();
       return;
     }
-    if (this.series.SeriesId != 0)
-      this.bookDetails.Series = this.series;
-    await this.libraryService.SaveBookGeneralData(this.bookDetails);
-    await this.loading.dismiss();
-    this.cancel();
+    try {
+      await this.loading.present();
+      if (this.series.SeriesId != 0)
+        this.bookDetails.Series = this.series;
+      this.bookDetails.BookId = await this.libraryService.SaveBookGeneralData(this.bookDetails);
+    }
+    catch (error) {
+      await this.error.catchError(error);
+    }
+    finally {
+      await this.loading.dismiss();
+    }
   }
 
-  checkError() {
+  checkGeneralDataError() {
     this.bookErrors = [];
     if (this.bookDetails.Title == null || this.bookDetails.Title == '')
       this.bookErrors.push('The book title is required');
@@ -71,7 +94,40 @@ export class BookDetailsComponent  implements OnInit {
       this.bookErrors.push('The book position in the series is needed')
   }
 
-  cancel() {
+  async saveReading() {
+    if (this.reading.ReadingDate?.toString() == '')
+      this.reading.ReadingDate = null;
+    console.log(this.reading);
+    if (this.reading.ReadingDate == null && !this.reading.ToRead && this.reading.ReadingId == 0)
+      return;
+    try {
+      await this.loading.present();
+      if (this.reading.ReadingDate != null)
+        this.reading.ToRead = false;
+      this.reading.ReadingId = await this.libraryService.SaveReading(this.reading, this.auth.getUser(), this.bookDetails.BookId);
+    }
+    catch(error) {
+      await this.error.catchError(error);
+    }
+    finally {
+      await this.loading.dismiss();
+    }
+  }
+  async saveOwnership() {
+    if (!this.ownership.PhysicallyOwned && !this.ownership.DigitallyOwned && this.ownership.OwnedBookId == 0)
+      return;
+    try {
+      await this.loading.present();
+      this.ownership.OwnedBookId = await this.libraryService.SaveOwnership(this.ownership, this.auth.getUser(), this.bookDetails.BookId);
+    }
+    catch(error) {
+      await this.error.catchError(error);
+    }
+    finally {
+      await this.loading.dismiss();
+    }
+  }
+  back() {
     this.navigation.navigateBack('library/books');
   }
 

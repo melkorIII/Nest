@@ -1,10 +1,13 @@
 import { HttpRequestHandlerService } from './../utils/http-request-handler.service';
 import { inject, Injectable } from '@angular/core';
 import { plainToInstance } from 'class-transformer';
+import { catchError } from 'rxjs';
 import { API_CONNECTION } from 'src/app/core/constants/constants';
 import { Author } from 'src/app/core/models/author';
 import { Book } from 'src/app/core/models/book';
 import { BookDetails } from 'src/app/core/models/book-details';
+import { Ownership } from 'src/app/core/models/ownership';
+import { Reading } from 'src/app/core/models/reading';
 import { Series } from 'src/app/core/models/series';
 
 @Injectable({
@@ -40,7 +43,7 @@ export class LibraryService {
 
   async SaveBookGeneralData(book: BookDetails) {
     let request: string = `${this.controller}SaveBookGeneralData`;
-    await this.requestHandler.post(request, JSON.stringify(book), this.url);
+    return JSON.parse(await this.requestHandler.post(request, JSON.stringify(book), this.url));
   }
 
   async GetAuthors(orderMode: string, offset: number, next: number, search: string | null = null) {
@@ -77,5 +80,15 @@ export class LibraryService {
   async SaveSeries(series: Series) {
     let request: string = `${this.controller}SaveSeries`;
     await this.requestHandler.post(request, JSON.stringify(series), this.url);
+  }
+
+  async SaveReading(reading: Reading, username: string, bookId: number) {
+    let request: string = `${this.controller}SaveReading?username=${username}&bookId=${bookId}`;
+    return JSON.parse(await this.requestHandler.post(request, JSON.stringify(reading), this.url));
+  }
+
+  async SaveOwnership(ownership: Ownership, username: string, bookId: number) {
+    let request: string = `${this.controller}SaveOwnership?username=${username}&bookId=${bookId}`;
+    return JSON.parse(await this.requestHandler.post(request, JSON.stringify(ownership), this.url));
   }
 }

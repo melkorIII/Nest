@@ -1,5 +1,6 @@
 import { Component, inject, OnInit } from '@angular/core';
 import {Howl} from 'howler';
+import { HeaderTitleService } from 'src/app/services/utils/header-title.service';
 
 @Component({
   selector: 'app-home',
@@ -9,6 +10,7 @@ import {Howl} from 'howler';
 export class HomeComponent  implements OnInit {
   public track: Howl;
   public musicOn: boolean = false;
+  private headeTitle = inject(HeaderTitleService)
 
   constructor() {
     this.track = new Howl({
@@ -18,7 +20,9 @@ export class HomeComponent  implements OnInit {
     })
    }
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.headeTitle.setTitle('Home');
+  }
 
   ionViewDidEnter() {
     //this.track.play();
