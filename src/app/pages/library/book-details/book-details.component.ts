@@ -40,7 +40,7 @@ export class BookDetailsComponent  implements OnInit {
   public ownership: Ownership = new Ownership(0, false, false);
 
   constructor() {
-    this.bookDetails = new BookDetails(0, '', true, [], null, null, null, null, null, null, null, null);
+    this.bookDetails = new BookDetails(0, '', true, [], null, null, null, null);
    }
 
   async ngOnInit() {
@@ -68,7 +68,7 @@ export class BookDetailsComponent  implements OnInit {
     this.router.navigateByUrl('/', {skipLocationChange: true}).then(() => {
         this.router.navigate(['library/book/add']);
     });
-    this.bookDetails = new BookDetails(0, '', true, [], null, null, null, null, null, null, null, null);
+    this.bookDetails = new BookDetails(0, '', true, [], null, null, null, null);
     this.mappedAuthors = '';
     this.bookErrors = [];
     this.authorsModal = false;
