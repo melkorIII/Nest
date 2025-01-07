@@ -6,6 +6,7 @@ import { API_CONNECTION } from 'src/app/core/constants/constants';
 import { Author } from 'src/app/core/models/author';
 import { Book } from 'src/app/core/models/book';
 import { BookDetails } from 'src/app/core/models/book-details';
+import { BooksList } from 'src/app/core/models/books-list';
 import { Ownership } from 'src/app/core/models/ownership';
 import { Reading } from 'src/app/core/models/reading';
 import { Series } from 'src/app/core/models/series';
@@ -24,13 +25,8 @@ export class LibraryService {
     request+= `?order=${order}&orderMode=${mode}&offset=${offset}&next=${next}`;
     if (search != null)
       request += `&search=${search}`;
-    let result: Book[] = JSON.parse(await this.requestHandler.get(request, this.url));
+    let result: BooksList = JSON.parse(await this.requestHandler.get(request, this.url));
     return result;
-  }
-
-  async GetBooksCount(): Promise<number> {
-    let request: string = `${this.controller}GetBooksCount`;
-    return JSON.parse(await this.requestHandler.get(request, this.url));
   }
 
   async GetBookDetails(bookId: number, user: string | null = null) {
@@ -54,11 +50,6 @@ export class LibraryService {
     return JSON.parse(await this.requestHandler.get(request, this.url));
   }
 
-  async GetAuthorsCount() {
-    let request: string = `${this.controller}GetAuthorsCount`;
-    return JSON.parse(await this.requestHandler.get(request, this.url));
-  }
-
   async SaveAuthor(author: Author) {
     let request: string = `${this.controller}SaveAuthor`;
     await this.requestHandler.post(request, JSON.stringify(author), this.url);
@@ -69,11 +60,6 @@ export class LibraryService {
     request += `?orderMode=${orderMode}&offset=${offset}&next=${next}`;
     if (search != null)
       request += `&search=${search}`;
-    return JSON.parse(await this.requestHandler.get(request, this.url));
-  }
-
-  async GetSeriesCount() {
-    let request: string = `${this.controller}GetSeriesCount`;
     return JSON.parse(await this.requestHandler.get(request, this.url));
   }
 

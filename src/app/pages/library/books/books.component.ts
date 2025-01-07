@@ -7,6 +7,7 @@ import { LibraryService } from 'src/app/services/nest-api/library.service';
 import { CatchErrorService } from 'src/app/services/utils/catch-error.service';
 import { LoadingService } from 'src/app/services/utils/loading.service';
 import { HeaderTitleService } from 'src/app/services/utils/header-title.service';
+import { BooksList } from 'src/app/core/models/books-list';
 
 @Component({
   selector: 'app-books',
@@ -26,6 +27,8 @@ export class BooksComponent  implements OnInit {
   public selectedBook: Book | null = null;
   private order: string = 'title';
   private mode: string = 'asc';
+  private previousSearch: string = '';
+  private previousIndex: number = 1;
 
   constructor() { }
 
@@ -36,8 +39,7 @@ export class BooksComponent  implements OnInit {
     try {
       await this.loading.present();
       this.selectedBook = null;
-      await this.getPages();
-      await this.GetBooks(1);
+      await this.GetBooks();
     }
     catch(error) {
       await this.error.catchError(error);
@@ -47,12 +49,19 @@ export class BooksComponent  implements OnInit {
     }
   }
 
-  async getPages() {
-    this.pages = Math.ceil(await this.libraryService.GetBooksCount() / this.booksPerPage);
-  }
-
-  async GetBooks(index: number, value: string | null = null) {
-    this.rows = await this.libraryService.GetBooks(this.order, this.mode, (index - 1) * this.booksPerPage, this.booksPerPage, value);
+  async GetBooks(index: number | null = null, value: string | null = null) {
+    this.pages = 0;
+    if (value != null)
+      this.previousSearch = value;
+    else
+      value = this.previousSearch;
+    if (index == null)
+      index = this.previousIndex
+    else
+      this.previousIndex = index;
+    let booksList: BooksList = await this.libraryService.GetBooks(this.order, this.mode, (index - 1) * this.booksPerPage, this.booksPerPage, value);
+    this.rows = booksList.Books;
+    this.pages = Math.ceil(booksList.TotalCount / this.booksPerPage);
   }
 
   async previous(index: number) {
@@ -86,7 +95,7 @@ export class BooksComponent  implements OnInit {
       await this.loading.present();
       this.booksPerPage = number;
       this.selectedBook = null;
-      await this.GetBooks(1);
+      await this.GetBooks();
     }
     catch(error) {
       await this.error.catchError(error);
@@ -105,7 +114,7 @@ export class BooksComponent  implements OnInit {
     try {
       await this.loading.present();
       this.order = order.toLowerCase();
-      await this.GetBooks(1);
+      await this.GetBooks();
     }
     catch(error) {
       await this.error.catchError(error);
@@ -118,7 +127,7 @@ export class BooksComponent  implements OnInit {
     try{
       await this.loading.present();
       this.mode = mode.toLowerCase();
-      await this.GetBooks(1);
+      await this.GetBooks();
     }
     catch(error) {
       await this.error.catchError(error)
@@ -130,7 +139,7 @@ export class BooksComponent  implements OnInit {
   async search(value: string) {
     try {
       await this.loading.present();
-      await this.GetBooks(1, value);
+      await this.GetBooks(null, value);
     }
     catch (error) {
       await this.error.catchError(error);

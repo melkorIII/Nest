@@ -3,6 +3,6 @@ export const LOCAL_STORAGE_KEYS = {
 }
 
 export const API_CONNECTION = {
-    //URL: 'https://localhost:7101/'
-    URL: 'https://nest-api.runasp.net/'
+    URL: 'https://localhost:7101/'
+    //URL: 'https://nest-api.runasp.net/'
 }

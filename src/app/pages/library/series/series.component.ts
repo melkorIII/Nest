@@ -2,6 +2,7 @@ import { Component, EventEmitter, inject, Input, OnInit, Output } from '@angular
 import { ignoreElements } from 'rxjs';
 import { ListColumn } from 'src/app/core/models/list-column';
 import { Series } from 'src/app/core/models/series';
+import { SeriesList } from 'src/app/core/models/series-list';
 import { LibraryService } from 'src/app/services/nest-api/library.service';
 import { AuthService } from 'src/app/services/security/auth.service';
 import { CatchErrorService } from 'src/app/services/utils/catch-error.service';
@@ -30,16 +31,19 @@ export class SeriesComponent  implements OnInit {
   public seriesToEdit: Series = new Series(0, '');
   public seriesErrors: string[] = [];
   private orderMode: string = 'asc';
+  private previousSearch: string = '';
+  private previousIndex: number = 1;
 
   constructor() { }
 
   async ngOnInit() {
     if (!this.component)
       this.header.setTitle('Series')
+    else
+      return;
     try {
       await this.loading.present();
-      await this.GetSeries(1);
-      await this.GetPages();
+      await this.GetSeries(null);
     }
     catch(error) {
       await this.error.catchError(error);
@@ -49,13 +53,20 @@ export class SeriesComponent  implements OnInit {
     }
   }
 
-  async GetPages() {
-    this.pages = Math.ceil(await this.libraryService.GetSeriesCount() / this.seriesPerPage);
-  }
-
-  async GetSeries(index: number, value: string | null = null) {
+  async GetSeries(index: number | null = null, value: string | null = null) {
     this.selectedSeries = null;
-    this.rows = await this.libraryService.GetSeries(this.orderMode, (index - 1) * this.seriesPerPage, this.seriesPerPage, value);
+    this.pages = 0;
+    if (value != null)
+      this.previousSearch = value;
+    else
+      value = this.previousSearch;
+    if (index == null)
+      index = this.previousIndex
+    else
+      this.previousIndex = index;
+    let seriesList: SeriesList = await this.libraryService.GetSeries(this.orderMode, (index - 1) * this.seriesPerPage, this.seriesPerPage, value);
+    this.rows = seriesList.Series;
+    this.pages = Math.ceil(seriesList.TotalCount / this.seriesPerPage)
   }
   async previous(index: number) {
     try {
@@ -88,7 +99,7 @@ export class SeriesComponent  implements OnInit {
       await this.loading.present();
       this.seriesPerPage = number;
       this.selectedSeries = null;
-      await this.GetSeries(1);
+      await this.GetSeries();
     }
     catch(error) {
       await this.error.catchError(error);
@@ -101,7 +112,7 @@ export class SeriesComponent  implements OnInit {
     try {
       await this.loading.present();
       this.orderMode = mode.toLowerCase();
-      await this.GetSeries(1);
+      await this.GetSeries();
     }
     catch(error) {
       await this.error.catchError(error);
@@ -113,7 +124,7 @@ export class SeriesComponent  implements OnInit {
   async search(value: string) {
     try {
       await this.loading.present();
-      await this.GetSeries(1, value);
+      await this.GetSeries(null, value);
     }
     catch(error) {
       await this.error.catchError(error)
@@ -140,8 +151,7 @@ export class SeriesComponent  implements OnInit {
       await this.loading.present();
       await this.libraryService.SaveSeries(this.seriesToEdit);
       this.seriesModal = false;
-      await this.GetSeries(1);
-      await this.GetPages();
+      await this.GetSeries();
     }
     catch(error) {
       await this.error.catchError(error)

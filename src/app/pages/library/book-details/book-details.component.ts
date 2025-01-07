@@ -1,5 +1,5 @@
 import { Component, inject, OnDestroy, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { NavController} from '@ionic/angular';
 import { Author } from 'src/app/core/models/author';
 import { BookDetails } from 'src/app/core/models/book-details';
@@ -24,6 +24,7 @@ export class BookDetailsComponent  implements OnInit {
   private loading = inject(LoadingService);
   private error = inject(CatchErrorService);
   private header = inject(HeaderTitleService);
+  private router = inject(Router)
   public auth = inject(AuthService);
   public bookDetails: BookDetails;
   public mappedAuthors: string | undefined = '';
@@ -61,6 +62,24 @@ export class BookDetailsComponent  implements OnInit {
         await this.loading.dismiss();
       }
     }
+  }
+
+  AddNew() {
+    this.router.navigateByUrl('/', {skipLocationChange: true}).then(() => {
+        this.router.navigate(['library/book/add']);
+    });
+    this.bookDetails = new BookDetails(0, '', true, [], null, null, null, null, null, null, null, null);
+    this.mappedAuthors = '';
+    this.bookErrors = [];
+    this.authorsModal = false;
+    this.authorToAdd = null;
+    this.authorToRemove = null;
+    this.series = new Series(0, '');
+    this.seriesModal = false;
+    this.selectedSeries = null;
+    this.reading = new Reading(0, null, false)
+    this.readingErrors = [];
+    this.ownership = new Ownership(0, false, false);
   }
 
   async saveGeneralData() {

@@ -1,5 +1,6 @@
 <ion-content>
   <ion-button class="ion-margin-top ion-margin-start" style="float: left" (click)="back()">Back</ion-button>
+  <ion-button class="ion-margin-top" style="float: left" (click)="AddNew()">Add New Book</ion-button>
   <div class="ion-padding-top content">
     <ion-accordion-group [multiple]="true" [value]="bookDetails.BookId == 0 ? 'first' : ['first', 'second', 'third']">
       <ion-accordion value="first">

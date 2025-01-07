@@ -19,6 +19,7 @@
       (changeOrderMode)="changeOrderMode($event)"
       (search)="search($event)"
       [pagination]="!component"
+      [orderBy]="component? [] : ['Author']"
     ></app-list>
   </div>
 

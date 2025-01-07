@@ -1,5 +1,6 @@
 import { Component, EventEmitter, inject, input, Input, OnInit, Output } from '@angular/core';
 import { Author } from 'src/app/core/models/author';
+import { AuthorsList } from 'src/app/core/models/authors-list';
 import { ListColumn } from 'src/app/core/models/list-column';
 import { LibraryService } from 'src/app/services/nest-api/library.service';
 import { AuthService } from 'src/app/services/security/auth.service';
@@ -29,16 +30,19 @@ export class AuthorsComponent  implements OnInit {
   public authorToEdit: Author = new Author(0, '');
   public authorErrors: string[] = [];
   private orderMode: string = 'asc';
+  private previousSearch: string = '';
+  private previousIndex: number = 1;
 
   constructor() { }
 
   async ngOnInit() {
     if (!this.component)
       this.headerTitle.setTitle('Authors')
+    else
+      return;
     try {
       await this.loading.present();
-      await this.GetAuthors(1);
-      await this.GetPages();
+      await this.GetAuthors();
     }
     catch(error) {
       await this.error.catchError(error);
@@ -48,13 +52,20 @@ export class AuthorsComponent  implements OnInit {
     }
   }
 
-  async GetPages() {
-    this.pages = Math.ceil(await this.libraryService.GetAuthorsCount() / this.authorsPerPage);
-  }
-
-  async GetAuthors(index: number, value: string | null = null) {
+  async GetAuthors(index: number | null = null, value: string | null = null) {
+    this.pages = 0;
     this.selectedAuthor = null;
-    this.rows = await this.libraryService.GetAuthors(this.orderMode, (index - 1) * this.authorsPerPage, this.authorsPerPage, value);
+    if (value != null)
+      this.previousSearch = value;
+    else
+      value = this.previousSearch;
+    if (index == null)
+      index = this.previousIndex
+    else
+      this.previousIndex = index;
+    let authorsList: AuthorsList = await this.libraryService.GetAuthors(this.orderMode, (index - 1) * this.authorsPerPage, this.authorsPerPage, value);
+    this.rows = authorsList.Authors;
+    this.pages = Math.ceil(authorsList.TotalCount / this.authorsPerPage)
   }
   async previous(index: number) {
     try {
@@ -87,7 +98,7 @@ export class AuthorsComponent  implements OnInit {
       await this.loading.present();
       this.authorsPerPage = number;
       this.selectedAuthor = null;
-      await this.GetAuthors(1);
+      await this.GetAuthors();
     }
     catch(error) {
       await this.error.catchError(error);
@@ -100,7 +111,7 @@ export class AuthorsComponent  implements OnInit {
     try {
       await this.loading.present();
       this.orderMode = mode.toLowerCase();
-      await this.GetAuthors(1);
+      await this.GetAuthors();
     }
     catch(error) {
       await this.error.catchError(error)
@@ -112,7 +123,7 @@ export class AuthorsComponent  implements OnInit {
   async search(value: string) {
     try {
       await this.loading.present();
-      await this.GetAuthors(1, value);
+      await this.GetAuthors(null, value);
     }
     catch(error) {
       await this.error.catchError(error);
@@ -139,8 +150,7 @@ export class AuthorsComponent  implements OnInit {
       await this.loading.present();
       await this.libraryService.SaveAuthor(this.authorToEdit);
       this.authorModal = false;
-      await this.GetAuthors(1);
-      await this.GetPages();
+      await this.GetAuthors();
     }
     catch(error) {
       await this.error.catchError(error)
